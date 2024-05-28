@@ -1,0 +1,55 @@
+{% if apps|length == 0 %}
+  <div class="myapps page-empty-app">
+    <div class="applistpage">
+      <main role="main" class="apps-listing empty-app-list">
+        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap app-title-group border-bottom">
+          <h1 class="h1-title hsbc-light">{{ data.name }}</h1>
+          <h3>{{ data.email }}</h3>
+        </div>
+        <div class="myapp-block d-flex flex-column justify-content-center align-items-center">
+          <div>
+            {{ "No apps created."|t }}
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+{% else %}
+  <div class="myapps">
+    <div class="applistpage">
+      <main role="main" class="apps-listing">
+        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap app-title-group border-bottom">
+          <h1 class="h1-title hsbc-light">{{ data.name }}</h1>
+          <h3>{{ data.email }}</h3>
+        </div>
+        <div class="table-responsive">
+          <table class="table table-bordered apps-list">
+            <thead class="thead-light">
+            <tr class="hsbc-regular">
+              <th scope="col">App name</th>
+              <td scope="col" aria-label="No value"></td>
+            </tr>
+            </thead>
+            <tbody class="hsbc-light">
+            {% for app in apps %}
+              <tr>
+                <td>{{ app.label }}</td>
+                <td>
+                  <a href="/view/app/{{ app.id }}/details?company={{ data.gid }}" target="_blank">
+                    <img alt="View" class="view-btn-icon" src="/themes/custom/hsbcmarketplace/images/view.svg"/>View
+                  </a>
+                </td>
+              </tr>
+            {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        <div class="d-flex w-100 justify-content-end">
+          <a data-dialog-type="modal"
+              data-dialog-options="{&quot;dialogClass&quot;:&quot;closedialog&quot;,&quot;width&quot;:600,&quot;height&quot;:390}"
+              class="use-ajax view-app-link hsbc-regular link-icon btn btn-primary" href="/close-modal-form">Close</a>
+        </div>
+      </main>
+    </div>
+  </div>
+{% endif %}

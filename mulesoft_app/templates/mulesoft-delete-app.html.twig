@@ -1,0 +1,23 @@
+<div class=" delete-app-form">
+    <main role="main" class="">
+      <div class="">
+        <span role="img" aria-label="delete-warning" class="icon-img delete-app-warning"></span>
+        <h1 class="delete-app-name h1-appdetails">
+          {{ form.app_name_markup }}
+        </h1>
+      <div class="app-delete-text">
+        This app will be deleted and all of its data will be removed permanently.
+      </div>
+      {{ form.status_messages }}
+      <div>{{ form.reason }}</div>
+      <div class="d-flex w-100 justify-content-end edit-app-btn-grp">
+        <a href="" class="btn btn-tertiary--light cancel-edit-app"
+           data-drupal-selector="edit-cancel" id="edit-cancel">Cancel</a>
+        {{ form.submit }}
+      </div>
+      {{ form.form_build_id }}
+      {{ form.form_token }}
+      {{ form.form_id }}
+    </div>
+  </main>
+</div>

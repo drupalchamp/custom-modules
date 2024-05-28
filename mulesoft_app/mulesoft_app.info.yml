@@ -1,0 +1,9 @@
+name: My App
+type: module
+description: 'To show list of user app'
+package: HSBC
+core: 8.x
+# Information added by Drupal.org packaging script on 2019-08-23
+version: '8.x-1.0'
+project: 'HSBC'
+datestamp: 1566573495

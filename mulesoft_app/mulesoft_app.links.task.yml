@@ -1,0 +1,26 @@
+mulesoft_app.settings:
+  route_name: mulesoft_app.mulesoft_app_authentication_form
+  title: 'Credentials'
+  base_route: mulesoft_app.mulesoft_app_authentication_form
+
+mulesoft_app.settings.connection_config:
+  route_name: mulesoft_app.mulesoft_app_connection_config_form
+  title: 'Connection settings'
+  base_route: mulesoft_app.mulesoft_app_authentication_form
+
+mulesoft_app.settings.error_page:
+  route_name: mulesoft_app.settings.error_page
+  title: 'Error handling'
+  base_route: mulesoft_app.mulesoft_app_authentication_form
+
+mulesoft_app.settings.sync_content:
+  route_name: mulesoft_app.mulesoft_api_sync_form
+  title: 'Sync Content'
+  base_route: mulesoft_app.mulesoft_app_authentication_form
+
+mulesoft_app.settings.mulesoft_app_apigatewaytype_form:
+  route_name: mulesoft_app.mulesoft_app_apigatewaytype_form
+  title: 'Api Gateway Type'
+  base_route: mulesoft_app.mulesoft_app_authentication_form
+
+

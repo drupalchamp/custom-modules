@@ -1,0 +1,18 @@
+mulesoft_app.o_b_directory_config_form:
+  title: 'OB Directory Config'
+  route_name: mulesoft_app.o_b_directory_config_form
+  description: 'A description for the menu entry'
+  parent: hsbc_open_banking
+  weight: 99
+
+system.admin_config_mulesoft_apigateway:
+  title: 'Mulesoft API gateway'
+  parent: system.admin_config
+  route_name: mulesoft_app.admin_config_mulesoft_app
+
+mulesoft_app.settings:
+  title: 'General'
+  description: 'Mulesoft API gateway module settings.'
+  parent: system.admin_config_mulesoft_apigateway
+  route_name: mulesoft_app.mulesoft_app_authentication_form
+  weight: -10

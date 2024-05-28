@@ -1,0 +1,152 @@
+{{ attach_library('mulesoft_app/app_pages') }}
+{% if item|length > 0 %}
+  <div id="app-client-secret-data"
+       data-client-secret="{{ item.client_secret }}"></div>
+  <div id="app-id" data-app-id="{{ item.appId }}"></div>
+  <div id="app-group-id" data-app-group-id="{{ item.app_id }}"></div>
+  <div class="app-landing-page">
+    <div class="applistpage">
+      <nav class="sidebar">
+        <div id="myapp-data">Apps<span id="arrow-down"><svg focusable="false" version="1.1" id="chevron_x5F_down-layer"
+                                                            xmlns="http://www.w3.org/2000/svg"
+                                                            xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+                                                            viewBox="0 0 18 18" style="enable-background:new 0 0 18 18;"
+                                                            xml:space="preserve">
+          <g id="chevron_x5F_down_1_">
+            <polygon points="17,4.196 9,12.194 1,4.196 1,5.892 9,13.892 17,5.892 	"></polygon>
+            <rect transform="matrix(-1 -1.224647e-16 1.224647e-16 -1 18 18)" style="fill:none;" width="18"
+                  height="18"></rect>
+          </g>
+          </svg></span></div>
+        <ul class="nav flex-column">
+          <li>
+            <a class="nav-link" href="/list-company">Companies</a>
+          </li>
+          <li>
+            <a class="nav-link active hsbc-bold" href="/myapp">Apps</a>
+          </li>
+        </ul>
+      </nav>
+      <main role="main" class="width780">
+        <div
+          class="app-title-grp d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center">
+          <h1 class="app-title hsbc-light">{{ item.title }}</h1>
+          <div class="btn-toolbar">
+            <a href="/myapp/{{ item.app_id }}/delete" data-dialog-type="modal"
+               data-dialog-options="{&quot;dialogClass&quot;:&quot;deleteapp&quot;,&quot;width&quot;:600,&quot;height&quot;:390}"
+               class="use-ajax delete-app-link hsbc-regular link-icon"><span
+                class="delete-app"></span>{{ "Delete"|t }}</a>
+            <a class="use-ajax edit-app-link hsbc-regular link-icon"
+               href="/myapp/{{ item.app_id }}/edit"
+               data-dialog-type="modal"
+               data-dialog-options="{&quot;dialogClass&quot;:&quot;editapp&quot;,&quot;width&quot;:600,&quot;height&quot;:420}">
+              <span class="edit-app"></span>{{ "Edit"|t }}</a>
+          </div>
+        </div>
+        <div class="hsbcmedium mb-2">
+          {{ "Status"|t }}
+        </div>
+        {% if item.status == 1 %}
+          <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" width="18" height="18"
+               fill="#00847F"
+               class="bi bi-circle-fill" viewBox="0 0 18 18">
+            <circle cx="8" cy="8" r="8"/>
+          </svg>
+          <span class="publishedstatus approved">
+            {{ "Approved"|t }}
+          </span>
+        {% else %}
+          <span
+            class="publishedstatus pending">{{ "Review in progress"|t }}</span>
+        {% endif %}
+
+        <div class="hr-app-page"></div>
+
+        <h2 class="h2-nonbrand app-key">{{ "Application key"|t }}</h2>
+
+        <div class="app-client-id-grp">
+          <label>Client ID</label>
+          <div class="d-flex clientid-div">
+            <div id="app-client-id" class="app-client-id mr-2">
+              {{ item.client_id }}
+            </div>
+            <button class="copy-btn btn btn-tertiary--light copy-client-id" value="copy-client-id">
+              <span role="img" aria-label="client id"
+                    class="icon-img copy-icon"></span>Copy
+            </button>
+          </div>
+        </div>
+        <div class="app-client-secret-group">
+          <label> Client secret</label>
+          <div class="d-flex clientseccret-div">
+            <div id="app-client-secret" class="app-client-secret mr-2">
+              &bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;
+            </div>
+            <button
+              class="copy-btn btn btn-tertiary--light mr-2 client-secret-show" value="client-secret-show">
+              <span role="img" aria-label="client secret"
+                    class="show-icon icon-img"></span> Show
+            </button>
+            <button
+              class="copy-btn btn btn-tertiary--light mr-2 client-secret-hide" value="client-secret-hide"
+              style="display: none"><span role="img" aria-label="client secret"
+                                          class="hide-icon icon-img"></span>
+              Hide
+            </button>
+            <button
+              class="copy-btn btn btn-tertiary--light client-secret-reset" value="client-secret-reset">
+              <span role="img" aria-label="refresh"
+                    class="refresh-icon icon-img"></span> Reset
+            </button>
+          </div>
+        </div>
+        <div class="hr-app-page"></div>
+        <div
+          class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center apiaccess-title-grp">
+          <h2 class="h2-nonbrand">API access</h2>
+          <div class="btn-toolbar2 mb-2 mb-md-0">
+            <a class="use-ajax hsbc-regular link-icon"
+               href="/myapp/api/{{ item.app_id }}/edit"
+               data-dialog-type="modal"
+               data-dialog-options="{&quot;dialogClass&quot;:&quot;editapiaccess&quot;,&quot;width&quot;:800,&quot;height&quot;:620}">
+              <span class="edit-app"></span>{{ "Edit"|t }}</a>
+          </div>
+        </div>
+        <div class="table-responsive">
+          <table class="table table-bordered api-product-table">
+            <thead>
+            <tr class="hsbc-regular">
+              <th>API Name</th>
+              <th>Details</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for key, value in item.apiAccess %}
+              <tr class="hsbc-light">
+                <td>
+                  {% if value.icon_url %}
+                    <span class="api-icon-image"><img src="{{ value.icon_url }}" alt="{{ value.title }}">
+                    </span>{{ value.title }}
+                  {% else %}
+                    <span class="api-icon"></span>{{ value.title }}
+                  {% endif %}
+                </td>
+                <td>
+                  {% if value.overview_url != "#" %}
+                    <a href="{{ value.overview_url }}">API Overview <span class="new_tab"></span></a>
+                  {% else %}
+                    <a target="_blank" href="{{ value.overview_url }}">API Overview <span class="new_tab"></span></a>
+                  {% endif %}
+                </td>
+              </tr>
+            {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </main>
+    </div>
+  </div>
+{% else %}
+  <div class="not-found">{{ "App not found"|t }}</div>
+{% endif %}
+

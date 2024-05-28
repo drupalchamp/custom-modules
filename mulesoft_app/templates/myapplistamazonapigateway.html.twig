@@ -1,0 +1,279 @@
+{#
+
+Description text for the Block Example.
+
+#}
+
+{% if appentity|length == 0 %}
+
+
+  <div class="alert alert-info">
+    <strong>Info!</strong> You have not added any App . If you are a new user click on "Add a new App" button to add a
+    App
+  </div>
+
+
+{% endif %}
+
+
+<div class="mb-3 d-flex justify-content-end">
+
+  <a class="btn btn-primary" href="{{ url('mulesoft_app.myappaddapp') }}" role="button">Add a new App</a>
+</div>
+
+
+<div id="accordion" class="mb-5">
+
+
+  {% for keynum,eachappentity in appentity %}
+
+
+    <div class="card">
+      <div class="card-header" id="headingOne{{ keynum }}">
+        <h4 class="mb-0">
+
+          <button class="btn btn-link btn-block text-left" type="button" data-toggle="collapse"
+                  data-target="#collapseOne{{ keynum }}" aria-expanded="true" aria-controls="collapseOne">
+            {{ eachappentity.label() }}
+          </button>
+
+
+        </h4>
+      </div>
+      <div id="collapseOne{{ keynum }}" class="collapse" aria-labelledby="headingOne{{ keynum }}"
+           data-parent="#accordion">
+
+        <div class="card-body" style="margin: 20px">
+
+          {% set count = 0 %}
+
+
+          <div class="row" style="margin-bottom:40px;">
+
+
+            <div class="col-md-5">
+              <div>
+                {% if count == 0 %}
+
+
+
+
+
+                  <div class="datacontent">
+                    <div class="row">
+                      <div class="col-md-5">
+
+                        <label> APPLICATION NAME </label>
+                      </div>
+                      <div class="col-md-7">
+                        {{ eachappentity.label() }}
+                      </div>
+
+                    </div>
+
+                  </div>
+
+
+
+
+                  <div class="datacontent">
+                    <div class="row">
+                      <div class="col-md-5">
+
+                        <label> CALL BACK URL </label>
+                      </div>
+                      <div class="col-md-7">
+
+                        {{ eachappentity.field_callback_url.value }}
+                      </div>
+
+                    </div>
+                  </div>
+
+
+
+
+                {% endif %}
+
+              </div>
+            </div>
+
+
+            <div class="col-md-5">
+
+
+              <div class="datacontent">
+
+
+                <div class="row">
+                  <div class="col-md-5">
+
+                    <label> API </label>
+                  </div>
+                  <div class="col-md-7">
+
+                    {% set checkboxapinum = 0 %}
+
+                    {% for  check in eachappentity.field_apis %}
+
+
+
+
+                      {% set checkvalue = check.value | render %}
+
+
+                      {% set commaprefix = '' %}
+
+                      {% if  checkboxapinum > 0 %}
+
+                        {% set commaprefix = ',' %}
+
+                      {% endif %}
+
+
+
+                      {% set checkboxapinum =  checkboxapinum + 1 %}
+                      {{ commaprefix }} {{ apidetails[checkvalue] }}
+
+
+
+                    {% endfor %}
+
+
+                  </div>
+
+                </div>
+
+
+              </div>
+
+              <div class="datacontent">
+
+
+                <div class="row">
+                  <div class="col-md-5">
+
+                    <label> CONSUMER KEY </label>
+                  </div>
+                  <div class="col-md-7">
+
+
+                    {{ eachappentity.field_client_id.value }}
+
+
+                  </div>
+
+                </div>
+
+
+              </div>
+              <div class="datacontent">
+
+
+                <div class="row">
+                  <div class="col-md-5">
+
+                    <label> CONSUMER SECRET </label>
+                  </div>
+                  <div class="col-md-7">
+
+
+                    {{ eachappentity.field_client_secret.value }}
+
+                  </div>
+
+                </div>
+
+
+              </div>
+              <div class="datacontent">
+
+                <div class="row">
+                  <div class="col-md-5">
+
+                    <label> KEY ISSUED </label>
+                  </div>
+                  <div class="col-md-7">
+
+                    {% if eachappentity.status.0.value == 1 %}
+                      {{ eachpargraph.published_at.value|date('Y-m-d') }}
+                    {% endif %}
+
+                  </div>
+
+                </div>
+
+
+              </div>
+
+
+            </div>
+
+
+            <div class="col-md-2">
+
+
+              {% if count == 0 %}
+                {% if eachappentity.status.0.value == 1 %}
+
+                  <span class="publishedstatus"> Approved </span>
+
+                {% else %}
+
+                  <span class="publishedstatus"> Pending </span>
+
+                {% endif %}
+              {% endif %}
+
+            </div>
+
+
+          </div>
+
+          {% set count = count + 1 %}
+
+
+        </div>
+
+
+      </div>
+    </div>
+
+
+
+
+  {% endfor %}
+</div>
+
+
+<style>
+
+  .fa {
+    float: right;
+  }
+
+
+  .datacontent {
+
+    margin-bottom: 5px;
+
+  }
+
+
+  .datacontent label {
+
+    font-weight: bold;
+    width: 160px;
+    margin-right: 10px;
+
+  }
+
+  .publishedstatus {
+
+    color: red;
+
+  }
+
+
+</style>
+

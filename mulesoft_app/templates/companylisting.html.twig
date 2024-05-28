@@ -1,0 +1,24 @@
+<div class="company-listing">
+  <div class="add-member">
+    <a href="{{ path("mulesoft_app.add_member") }}"><img alt="create app" class="add-btn-icon" src="/themes/custom/hsbcmarketplace/images/add.svg"/>Add Member</a>
+  </div>
+  <div class="table-responsive">
+    <table>
+      <thead>
+      <tr>
+        <td>Company Name</td>
+        <td></td>
+      </tr>
+      </thead>
+      {% for company_id, company_label in data %}
+        <tr>
+          <td data-id="{{ company_id }}">{{ company_label }}</td>
+          <td>
+            <a href="/company/list/members/{{ company_id }}"><img alt="View"  class="view-btn-icon" src="/themes/custom/hsbcmarketplace/images/view.svg"/>{{ "View Members"|t }}</a>
+            
+          </td>
+        </tr>
+      {% endfor %}
+    </table>
+  </div>
+</div>

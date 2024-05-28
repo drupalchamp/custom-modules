@@ -1,0 +1,27 @@
+<div class="{{ form.div_id['#value'] }}">
+  <main role="main" class="">
+    <div class="">
+      <span role="img" aria-label="{{ form.operation_label['#value'] }}"
+            class="icon-img {{ form.operation_class['#value'] }}"></span>
+      <h1 class="delete-app-name h1-appdetails">
+        {{ form.edit_question_markup }}
+      </h1>
+      <div class="app-delete-text">
+        {{ form.edit_description_markup }}
+      </div>
+      <div class="status-messages-form">
+        {{ form.status_messages }}
+      </div>
+      <div class="d-flex w-100 justify-content-end edit-app-btn-grp">
+        <a data-dialog-type="modal"
+           data-dialog-options="{&quot;dialogClass&quot;:&quot;cancelform&quot;,&quot;width&quot;:600,&quot;height&quot;:390}"
+           class="use-ajax btn btn-tertiary--light cancel-edit-app" href="/close-modal-form"
+           data-drupal-selector="edit-cancel" id="edit-cancel">Cancel</a>
+        {{ form.submit }}
+      </div>
+      {{ form.form_build_id }}
+      {{ form.form_token }}
+      {{ form.form_id }}
+    </div>
+  </main>
+</div>

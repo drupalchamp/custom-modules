@@ -1,0 +1,20 @@
+services:
+  logger.channel.mulesoft_app:
+    parent: logger.channel_base
+    arguments: [ 'mulesoft_app' ]
+  mulesofthelper:
+    class: Drupal\mulesoft_app\MulesoftHelper
+    arguments: [ ]
+  mulesoft_app.sdk_connector:
+    class: Drupal\mulesoft_app\SDKConnector
+    arguments: [ '@http_client_factory', '@key.repository', '@entity_type.manager', '@config.factory', '@module_handler', '@info_parser' ]
+  mulesoft_app.app_access_checker:
+    class: Drupal\mulesoft_app\Access\AppAccessCheck
+    arguments: [ '@current_user' ]
+    tags:
+      - { name: 'access_check', applies_to: '_app_access_check' }
+  mulesoft_app.user_approve_access_check:
+    class: Drupal\mulesoft_app\Access\UserApproveAccessCheck
+    arguments: [ '@current_user' ]
+    tags:
+      - { name: 'access_check', applies_to: '_user_approve_access_check' }

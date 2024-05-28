@@ -1,0 +1,524 @@
+<?php
+
+/**
+ * @file
+ * Module file for Examples for Developers.
+ *
+ * This file serves as a stub file for the many Examples modules in the
+ * @link http://drupal.org/project/examples Examples for Developers Project
+ * @endlink which you can download and experiment with.
+ *
+ * One might say that examples.module is an example of documentation. However,
+ * note that the example submodules define many doxygen groups, which may or
+ * may not be a good strategy for other modules.
+ */
+
+use Drupal\apiinfo\Entity\ApiinfoEntity;
+use Drupal\Component\Serialization\Json;
+use Drupal\Component\Utility\Html;
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Url;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\user\Entity\Role;
+use Drupal\user\Entity\User;
+use Drupal\node\Entity\Node;
+use Drupal\paragraphs\Entity\Paragraph;
+use GuzzleHttp\Exception\RequestException;
+
+/**
+ * @defgroup examples Examples
+ * @{
+ * Well-documented API examples for a broad range of Drupal core functionality.
+ *
+ * Developers can learn how to use a particular API quickly by experimenting
+ * with the examples, and adapt them for their own use.
+ *
+ * Download the Examples for Developers Project (and participate with
+ * submissions, bug reports, patches, and documentation) at
+ * http://drupal.org/project/examples
+ */
+
+
+/**
+ * Implements hook_theme().
+ */
+function mulesoft_app_theme($existing, $type, $theme, $path) {
+  return [
+    'myapplist' => [
+      'variables' => ['appentity' => NULL],
+    ],
+    'myapplistamazonapigateway' => [
+      'variables' => ['appentity' => NULL, 'apidetails' => NULL],
+    ],
+    'myapplistmulesoftapigateway' => [
+      'variables' => ['appentity' => NULL, 'apidetails' => NULL],
+    ],
+    'mulesoftapigateway' => [
+      'render element' => 'children',
+    ],
+    'mulesoft_app_create_form' => [
+      'template' => 'mulesoft-create-app',
+      'render element' => 'form',
+    ],
+    'mulesoft_app_edit_form' => [
+      'template' => 'mulesoft-edit-app',
+      'render element' => 'form',
+    ],
+    'mulesoft_delete_app_form' => [
+      'template' => 'mulesoft-delete-app',
+      'render element' => 'form',
+    ],
+    'mulesoft_member_edit_form' => [
+      'template' => 'edit-member-group',
+      'render element' => 'form',
+    ],
+    'my_custom_fieldset_mule_apis' => [
+      'render element' => 'children',
+    ],
+    'detailsapp' => [
+      'variables' => ['item' => NULL],
+    ],
+    'userdetailsapp' => [
+      'variables' => ['item' => NULL],
+    ],
+    'companylisting' => [
+      'variables' => ['data' => NULL],
+    ],
+    'mycompanylisting' => [
+      'variables' => ['data' => NULL],
+    ],
+    'userappoperations' => [
+      'variables' => ['data' => NULL],
+    ],
+    'userapps' => [
+      'variables' => [
+        'apps' => NULL,
+        'data' => NULL,
+      ],
+    ],
+  ];
+}
+
+
+/**
+ * Implements hook_form_alter().
+ */
+function mulesoft_app_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  if ($form_id == 'customyapp_addappform_form') {
+    $form['#attached']['library'][] = 'hsbcmarketplace/mulesoft_app';
+  }
+  elseif ($form_id == 'apiinfo_entity_mulesoft_api_gateway_keys_edit_form') {
+    $deleted = $form['field_unpublish']['widget']['value']['#default_value'];
+    if ($deleted) {
+      $form['field_unpublish']['widget']['value']['#disabled'] = TRUE;
+      $form['field_comment']['widget'][0]['value']['#disabled'] = TRUE;
+      $form['field_unpublished_date']['widget'][0]['value']['#disabled'] = TRUE;
+    }
+    $form['field_app_id']['#disabled'] = 'disabled';
+    $form['name']['#disabled'] = 'disabled';
+    $form['field_app_group']['#disabled'] = 'disabled';
+  }
+  elseif ($form_id == 'group_content_partners-group_membership_add_form') {
+    $system_roles = user_role_names(TRUE);
+    $form['mulesoft_app_system_roles'] = [
+      '#type' => 'checkboxes',
+      '#title' => t('System Roles'),
+      '#options' => $system_roles,
+      '#weight' => '99',
+    ];
+    $form['actions']['submit']['#submit'][] = 'mulesoft_app_add_user_role_to_user';
+  }
+}
+
+function mulesoft_app_add_user_role_to_user(array &$form, FormStateInterface $form_state) {
+  $values = $form_state->getValues();
+  $roles_to_be_added_to_the_user_arr = $values['mulesoft_app_system_roles'];
+  $roles_to_be_added_to_the_user = array_filter($roles_to_be_added_to_the_user_arr);
+  if ($roles_to_be_added_to_the_user) {
+    $account = User::load(\Drupal::currentUser()->id());
+    if($account) {
+      foreach ($roles_to_be_added_to_the_user as $each_role) {
+        $account->addRole($each_role);
+      }
+      $account->addRole("corporate_company");
+      $account->save();
+    }
+  }
+}
+
+/**
+ * @param \Drupal\Core\Entity\EntityInterface $entity
+ * Implements hook_entity_presave()
+ * To update contracts for APP.
+ */
+function mulesoft_app_entity_presave(EntityInterface $entity) {
+  if ($entity->bundle() == 'mulesoft_api_gateway_keys') {
+    $route_name = \Drupal::routeMatch()->getRouteName();
+    if ($route_name == "entity.apiinfo_entity.edit_form") {
+      $original_apis_arr = $entity->original->get('field_mulesoft_apis')
+        ->getValue();
+      $updated_apis_arr = $entity->get('field_mulesoft_apis')->getValue();
+      foreach ($updated_apis_arr as $each_group_id) {
+        if ($each_group_id) {
+          $filtered_group_ids[] = $each_group_id['target_id'];
+        }
+      }
+      $original_apis = [];
+      if ($original_apis_arr) {
+        foreach ($original_apis_arr as $each_api) {
+          $original_apis[] = $each_api['target_id'];
+        }
+      }
+      $appID = $entity->get("field_app_id")->value;
+      $api_contract_arr = [];
+      $api_contract_id = $entity->get('field_api_contract_id')->getValue();
+      $original_apis = [];
+      foreach ($original_apis_arr as $each_api) {
+        $original_apis[] = $each_api['target_id'];
+      }
+      $delete_original_apis = array_diff($original_apis, $filtered_group_ids);
+      $add_apis = array_diff($filtered_group_ids, $original_apis);
+      $mulesoft_connector = \Drupal::service('mulesoft_app.sdk_connector');
+      $access_token = $mulesoft_connector->getaccesstoken();
+      if ($delete_original_apis) {
+        foreach ($api_contract_id as $paragraph_key => $each_api_contract_id) {
+          $p = Paragraph::load($each_api_contract_id['target_id']);
+          if ($p) {
+            $api_id = $p->get('field_mulesoft_api_id')->getValue()[0]['value'];
+            $contract_id = $p->get('field_mulesoft_contract_id')
+              ->getValue()[0]['value'];
+            if ($contract_id) {
+              $api_contract_arr[$api_id] = $contract_id;
+              $paragraphs[$contract_id] = $each_api_contract_id['target_id'];
+            }
+            else {
+              $p->delete();
+            }
+          }
+        }
+        foreach ($delete_original_apis as $original_api) {
+          $api_node = Node::load($original_api);
+          if ($api_node) {
+            $api_group_id = $api_node->get('field_mulesoft_api_id')->value;
+            $api_asset_id = $api_node->get('field_mulesoft_asset_id')->value;
+            if (isset($api_contract_arr[$api_group_id])) {
+              $contractId = $api_contract_arr[$api_group_id];
+              if ($contractId) {
+                $contractRevoke = mulesoft_app_revoke_api_group_contract($api_group_id, $contractId, $api_asset_id);
+                if ($contractRevoke) {
+                  $contractdelete = mulesoft_app_delete_api_group_contract($api_group_id, $contractId, $api_asset_id);
+                  if ($contractdelete) {
+                    $paragraph_load = Paragraph::load($paragraphs[$contractId]);
+                    $paragraph_load->set("field_paragraph_deleted", 1);
+                    $paragraph_load->save();
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+      if ($add_apis) {
+        $contract_ids = [];
+        foreach ($add_apis as $filtered_group_id) {
+          $api_node = Node::load($filtered_group_id);
+          if ($api_node) {
+            $api_group_id = $api_node->get('field_mulesoft_api_id')->value;
+            $contract_id = mulesoft_app_create_contract($access_token, $appID, $api_group_id);
+            if ($contract_id) {
+              $contract_ids[$api_group_id][] = $contract_id;
+            }
+          }
+        }
+        if ($contract_ids) {
+          foreach ($contract_ids as $group_id => $each_contract_id) {
+            if ($each_contract_id) {
+              $paragraph = Paragraph::create([
+                'type' => 'mulesoft_contract_id',
+                'field_mulesoft_api_id' => $group_id,
+                'field_mulesoft_contract_id' => $each_contract_id,
+              ]);
+              $paragraph->save();
+              $entity->get("field_api_contract_id")->appendItem($paragraph);
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+
+/**
+ * @param $client
+ * @param $access_token
+ * @param $app_id
+ */
+function mulesoft_app_create_contract($access_token, $app_id, $api_id) {
+  $serialized_body = JSON::encode([
+    'applicationId' => (int) $app_id,
+    'partyId' => '',
+    'partyName' => '',
+    'acceptedTerms' => 'false',
+  ]);
+  $mulesoft_connector = \Drupal::service('mulesoft_app.sdk_connector');
+  $mulesoft_config = \Drupal::config('mulesoft_app.auth');
+  $client = $mulesoft_connector->gethttpclient();
+  $baseurl = $mulesoft_config->get('baseurl');
+  $org_id = $mulesoft_config->get('orgid');
+  $env_id = trim($mulesoft_config->get('envid'));
+  $host_url = 'https://' . $baseurl . '/apimanager/api/v1/organizations/' . $org_id . '/environments/' . $env_id . '/apis/' . $api_id . '/contracts';
+  try {
+    $response = $client->post($host_url, [
+      'body' => $serialized_body,
+      'headers' => [
+        'Content-Type' => 'application/json',
+        'Authorization' => 'Bearer ' . $access_token,
+      ],
+    ]);
+    $code = $response->getStatusCode();
+    if ($code == 201) {
+      if ($response->getBody()) {
+        $response_body = JSON::decode($response->getBody());
+        return $response_body['id'];
+      }
+    }
+  } catch (RequestException $e) {
+    if ($e->hasResponse()) {
+      $exception = (string) $e->getResponse()->getBody();
+      $exception_arr = JSON::decode($exception);
+      if (property_exists($exception_arr, 'message')) {
+        \Drupal::logger('mulesoft_app')->error($exception_arr->message);
+        \Drupal::messenger()->addMessage($exception_arr->message, 'error');
+      }
+      elseif (property_exists($exception_arr, 'errors')) {
+        \Drupal::logger('mulesoft_app')
+          ->error($exception_arr->errors[0]->message);
+        \Drupal::messenger()
+          ->addMessage($exception_arr->errors[0]->message, 'error');
+      }
+    }
+  }
+}
+
+function mulesoft_app_create_api_group_contract($app_id, $group_id, $contract_id) {
+  $serialized_body = json_encode([
+    'applicationId' => (int) $app_id,
+    'partyId' => '',
+    'partyName' => '',
+    'acceptedTerms' => 'false',
+  ]);
+  $mulesoft_connector = \Drupal::service('mulesoft_app.sdk_connector');
+  $access_token = $mulesoft_connector->getaccesstoken();
+  $mulesoft_config = \Drupal::config('mulesoft_app.auth');
+  $client = $mulesoft_connector->gethttpclient();
+  $baseurl = $mulesoft_config->get('baseurl');
+  $org_id = $mulesoft_config->get('orgid');
+  $env_id = trim($mulesoft_config->get('envid'));
+
+  if ($contract_id) {
+    $host_url = 'https://' . $baseurl . '/apimanager/xapi/v1/organizations/' . $org_id . '/environments/' . $env_id . '/groupInstances/' . $group_id . '/contracts/' . $contract_id . '/restore';
+  }
+  else {
+    $host_url = 'https://' . $baseurl . '/apimanager/api/v1/organizations/' . $org_id . '/environments/' . $env_id . '/groupInstances/' . $group_id . '/contracts';
+  }
+  \Drupal::logger('mulesoft_app_krishna_url')->error($host_url);
+
+  try {
+    $response = $client->post($host_url, [
+      'body' => $serialized_body,
+      'headers' => [
+        'Content-Type' => 'application/json',
+        'Authorization' => 'Bearer ' . $access_token,
+      ],
+    ]);
+
+    $code = $response->getStatusCode();
+
+    if ($code == 201) {
+      if ($response->getBody()) {
+        $response_body = json_decode($response->getBody());
+        \Drupal::messenger()
+          ->addMessage('Group Contract has been create to the app.', 'status');
+      }
+    }
+  } catch (\GuzzleHttp\Exception\RequestException $e) {
+    if ($e->hasResponse()) {
+      $exception = (string) $e->getResponse()->getBody();
+      $exception_obj = json_decode($exception);
+      if (property_exists($exception_obj, 'message')) {
+        \Drupal::logger('mulesoft_app')->error($exception_obj->message);
+        \Drupal::logger('mulesoft_app_krishna1')->error('here1');
+        \Drupal::messenger()->addMessage($exception_obj->message, 'error');
+      }
+      elseif (property_exists($exception_obj, 'errors')) {
+        \Drupal::logger('mulesoft_app')
+          ->error($exception_obj->errors[0]->message);
+        \Drupal::logger('mulesoft_app_krishna1')->error('here2');
+        \Drupal::messenger()
+          ->addMessage($exception_obj->errors[0]->message, 'error');
+      }
+    }
+  }
+}
+
+/**
+ * @param $api_id
+ * @param $contract_id
+ * @param $api_asset_id
+ *
+ * @return bool
+ * Implements to revoke contract
+ */
+function mulesoft_app_revoke_api_group_contract($api_id, $contract_id, $api_asset_id) {
+  $mulesoft_connector = \Drupal::service('mulesoft_app.sdk_connector');
+  $access_token = $mulesoft_connector->getaccesstoken();
+  $mulesoft_config = \Drupal::config('mulesoft_app.auth');
+  $client = $mulesoft_connector->gethttpclient();
+  $baseurl = $mulesoft_config->get('baseurl');
+  $org_id = $mulesoft_config->get('orgid');
+  $host_url = 'https://' . $baseurl . '/apiplatform/repository/v2/organizations/' . $org_id . '/apis/' . $api_asset_id . '/versions/' . $api_id . '/contracts/' . $contract_id . '/revoke';
+  try {
+    $response = $client->post($host_url, [
+      'headers' => [
+        'Content-Type' => 'application/json',
+        'Authorization' => 'Bearer ' . $access_token,
+      ],
+    ]);
+    $code = $response->getStatusCode();
+    if ($code == 201) {
+      return TRUE;
+    }
+  } catch (\GuzzleHttp\Exception\RequestException $e) {
+    if ($e->hasResponse()) {
+      $exception = (string) $e->getResponse()->getBody();
+      $exception_arr = json_decode($exception);
+      if (property_exists($exception_arr, 'message')) {
+        \Drupal::messenger()->addMessage($exception_arr->message, 'error');
+      }
+      elseif (property_exists($exception_arr, 'errors')) {
+        \Drupal::messenger()
+          ->addMessage($exception_arr->errors[0]->message, 'error');
+      }
+    }
+  }
+}
+
+function mulesoft_app_delete_api_group_contract($api_id, $contract_id, $api_asset_id) {
+  $mulesoft_connector = \Drupal::service('mulesoft_app.sdk_connector');
+  $access_token = $mulesoft_connector->getaccesstoken();
+  $mulesoft_config = \Drupal::config('mulesoft_app.auth');
+  $client = $mulesoft_connector->gethttpclient();
+  $baseurl = $mulesoft_config->get('baseurl');
+  $org_id = $mulesoft_config->get('orgid');
+  $host_url = 'https://' . $baseurl . '/apiplatform/repository/v2/organizations/' . $org_id . '/apis/' . $api_asset_id . '/versions/' . $api_id . '/contracts/' . $contract_id;
+  try {
+    $response = $client->delete($host_url, [
+      'headers' => [
+        'Content-Type' => 'application/json',
+        'Authorization' => 'Bearer ' . $access_token,
+      ],
+    ]);
+    $code = $response->getStatusCode();
+    if ($code == 204) {
+      return TRUE;
+    }
+  } catch (\GuzzleHttp\Exception\RequestException $e) {
+    if ($e->hasResponse()) {
+      $exception = (string) $e->getResponse()->getBody();
+      $exception_arr = json_decode($exception);
+      if (property_exists($exception_arr, 'message')) {
+        \Drupal::messenger()->addMessage($exception_arr->message, 'error');
+      }
+      elseif (property_exists($exception_arr, 'errors')) {
+        \Drupal::messenger()
+          ->addMessage($exception_arr->errors[0]->message, 'error');
+      }
+    }
+  }
+}
+
+function validateApiGroupId($group_id) {
+  $mulesoft_connector = \Drupal::service('mulesoft_app.sdk_connector');
+  $access_token = $mulesoft_connector->getaccesstoken();
+  // validate for the valid api ids in the selected apis
+  $group_ids_from_mulesoft = getMulesoftApiGroups($access_token);
+  $groupAPIsarray = [];
+  if ($group_ids_from_mulesoft) {
+    foreach ($group_ids_from_mulesoft->groups as $key => $each_group) {
+      $instance_id = $each_group->versions[0]->instances[0]->id;
+      $groupAPIsarray[$instance_id] = $each_group->name;
+    }
+    $groupAPIsarrayflip = array_flip($groupAPIsarray);
+    return in_array($group_id, $groupAPIsarrayflip);
+  }
+  else {
+    return FALSE;
+  }
+}
+
+function getMulesoftApiGroups($access_token) {
+  try {
+    $mulesoft_connector = \Drupal::service('mulesoft_app.sdk_connector');
+    $mulesoft_config = \Drupal::config('mulesoft_app.auth');
+    $client = $mulesoft_connector->gethttpclient();
+    $baseurl = $mulesoft_config->get('baseurl');
+    $orgid = $mulesoft_config->get('orgid');
+
+    $response = $client->get('https://' . $baseurl . '/apimanager/api/v1/organizations/' . $orgid . '/groups', [
+      'headers' => [
+        'Content-Type' => 'application/json',
+        'Authorization' => 'Bearer ' . $access_token,
+      ],
+    ]);
+
+    $code = $response->getStatusCode();
+    if ($code == 200) {
+      if ($response->getBody()) {
+        $response_body = json_decode($response->getBody());
+        return $response_body;
+      }
+    }
+  } catch (\GuzzleHttp\Exception\RequestException $e) {
+    if ($e->hasResponse()) {
+      $exception = (string) $e->getResponse()->getBody();
+      $exception_arr = json_decode($exception);
+      if (property_exists($exception_arr, 'message')) {
+        \Drupal::logger('mulesoft_app')->error($exception_arr->message);
+        \Drupal::logger('mulesoft_app_krishna1')->error('here5');
+        \Drupal::messenger()->addMessage($exception_arr->message, 'error');
+      }
+      elseif (property_exists($exception_arr, 'errors')) {
+        \Drupal::logger('mulesoft_app')
+          ->error($exception_arr->errors[0]->message);
+        \Drupal::logger('mulesoft_app_krishna1')->error('here6');
+        \Drupal::messenger()
+          ->addMessage($exception_arr->errors[0]->message, 'error');
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_views_data_alter().
+ */
+function mulesoft_app_views_data_alter(array &$data) {
+  // Check Apps count based on user and selected company.
+  $data['group_content']['user_apps'] = [
+    'title' => t('User apps Count'),
+    'field' => [
+      'title' => t('Apps'),
+      'help' => t('User apps Count for selected company.'),
+      'id' => 'user_apps_count',
+    ],
+  ];
+  // Construct operations link.
+  $data['group_content']['user_apps_operations'] = [
+    'title' => t('User apps Operations'),
+    'field' => [
+      'title' => t('Apps Admin Operations'),
+      'help' => t('User Apps Operations.'),
+      'id' => 'user_apps_operations',
+    ],
+  ];
+}

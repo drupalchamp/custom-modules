@@ -1,0 +1,27 @@
+{{ attach_library('mulesoft_app/app_pages') }}
+<div class="user-apps-operations">
+  <div class="user-operations-button">
+    <a href="#" aria-label="view-app-details"><img alt="View App Details" src="/themes/custom/hsbcmarketplace/images/menu_more_vertical.svg"/></a>
+  </div>
+  <ul class="user-operations-list hidden">
+    <li><a data-dialog-type="modal"
+           data-dialog-options="{&quot;dialogClass&quot;:&quot;deleteapp&quot;,&quot;width&quot;:600,&quot;height&quot;:390}"
+           class="use-ajax view-app-link hsbc-regular link-icon" href="/group/{{ data.gid }}/user/{{ data.uid }}/apps">View
+        Apps</a></li>
+    {% if data.admin_user == true %}
+      <li><a data-dialog-type="modal"
+             data-dialog-options="{&quot;dialogClass&quot;:&quot;deleteapp&quot;,&quot;width&quot;:600,&quot;height&quot;:390}"
+             class="use-ajax admin-role-link hsbc-regular link-icon"
+             href="/group/{{ data.gid }}/user/{{ data.uid }}/admin">Set as administrator</a></li>
+      <li><a data-dialog-type="modal"
+             data-dialog-options="{&quot;dialogClass&quot;:&quot;deleteapp&quot;,&quot;width&quot;:600,&quot;height&quot;:390}"
+             class="use-ajax developer-role-link hsbc-regular link-icon"
+             href="/group/{{ data.gid }}/user/{{ data.uid }}/developer">Set as developer</a></li>
+      <li><a data-dialog-type="modal"
+             data-dialog-options="{&quot;dialogClass&quot;:&quot;deleteapp&quot;,&quot;width&quot;:600,&quot;height&quot;:390}"
+             class="use-ajax remove-role hsbc-regular link-icon"
+             href="/group/{{ data.gid }}/user/{{ data.uid }}/remove">Remove
+          member</a></li>
+    {% endif %}
+  </ul>
+</div>

@@ -1,0 +1,6 @@
+app_pages:
+  js:
+    js/app_pages.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupal

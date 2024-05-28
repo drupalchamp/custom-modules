@@ -1,0 +1,98 @@
+{#
+/**
+ * @file
+ * Default theme implementation for a fieldset element and its children.
+ *
+ * Available variables:
+ * - attributes: HTML attributes for the <fieldset> element.
+ * - errors: (optional) Any errors for this <fieldset> element, may not be set.
+ * - required: Boolean indicating whether the <fieldeset> element is required.
+ * - legend: The <legend> element containing the following properties:
+ *   - title: Title of the <fieldset>, intended for use as the text
+       of the <legend>.
+ *   - attributes: HTML attributes to apply to the <legend> element.
+ * - description: The description element containing the following properties:
+ *   - content: The description content of the <fieldset>.
+ *   - attributes: HTML attributes to apply to the description container.
+ * - children: The rendered child elements of the <fieldset>.
+ * - prefix: The content to add before the <fieldset> children.
+ * - suffix: The content to add after the <fieldset> children.
+ *
+ * @see template_preprocess_fieldset()
+ *
+ * @ingroup themeable
+ */
+#}
+{% set classes = [
+  'js-form-item',
+  'form-item',
+  'js-form-wrapper',
+  'form-wrapper',
+] %}
+<div class="table-responsive">
+  <table class="table table-bordered create-app w-lg-75">
+    <thead>
+    <tr>
+      <td aria-label="No value">
+        <div id="checkbox-all" class="form-check" role="checkbox">
+          <input aria-labelledby="checkbox-all" onchange="checkAll(this)" class="form-checkbox form-check-input"
+                 type="checkbox" id="gridCheck">
+        </div>
+      </td>
+      <th>API Name</th>
+      <th>Details</th>
+    </tr>
+    </thead>
+    <tbody id="m-create-app-apis-checkbx">
+    {% for key, value in children['#options'] %}
+      <tr>
+        <td>
+          <div class="form-check" role="checkbox">
+            {% if children['#default_value']|length > 0 %}
+              {% set checked = "" %}
+              {% for key1, value1 in children['#default_value'] %}
+                {% if value1 == key %}
+                  {% set checked = 'checked="checked"' %}
+                {% endif %}
+              {% endfor %}
+            {% endif %}
+            <input aria-labelledby="checkbox-{{ key }}" data-drupal-selector="edit-mulesoft-group-apis-{{ key }}"
+                   type="checkbox" id="edit-mulesoft-group-apis-{{ key }}" name="mulesoft_group_apis[{{ key }}]"
+                   value="{{ key }}" class="form-checkbox form-check-input" {{ checked }}>
+            {# <label class="form-check-label custom-checkboxes" for="{{ key }}"> #}
+            {# <div class="checkbox-labels">{{ value.title }}</div> #}
+            {# </label> #}
+          </div>
+        </td>
+        <td id="checkbox-{{ key }}">
+          {% if value.icon_url %}
+            <span class="api-icon-image"><img src="{{ value.icon_url }}" alt="{{ value.title }}"></span>{{ value.title }}
+          {% else %}
+            <span class="api-icon"></span>{{ value.title }}
+          {% endif %}
+        </td>
+        <td>
+          {% if value.link == "#" %}
+            <a href="{{ value.link }}">API Overview<span class="new_tab"></span></a>
+          {% else %}
+            <a target="_blank" href="{{ value.link }}">API Overview<span class="new_tab"></span></a>
+          {% endif %}
+        </td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+<script type="application/javascript">
+  function checkAll(ele) {
+    if (ele.checked) {
+      jQuery('.mulesoft-apis').find(':checkbox').each(function () {
+        jQuery(this).prop('checked', true);
+      });
+    } else {
+      jQuery('.mulesoft-apis').find(':checkbox').each(function () {
+        jQuery(this).prop('checked', false);
+      });
+    }
+  }
+</script>

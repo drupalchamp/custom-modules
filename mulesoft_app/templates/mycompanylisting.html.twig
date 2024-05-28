@@ -1,0 +1,57 @@
+
+<div class="myapps">
+  <div class="applistpage">
+    <nav class="sidebar">
+      <div id="myapp-data">Companies <span id="arrow-down">
+          <svg focusable="false"  version="1.1" id="chevron_x5F_down-layer" xmlns="http://www.w3.org/2000/svg"
+               xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 18 18"
+               style="enable-background:new 0 0 18 18;" xml:space="preserve">
+        <g id="chevron_x5F_down_1_">
+          <polygon points="17,4.196 9,12.194 1,4.196 1,5.892 9,13.892 17,5.892 	"></polygon>
+          <rect transform="matrix(-1 -1.224647e-16 1.224647e-16 -1 18 18)" style="fill:none;" width="18"
+                height="18"></rect>
+        </g>
+        </svg></span></div>
+      <ul class="nav flex-column">
+        <li>
+          <a class="nav-link active hsbc-bold" href="/list-company" area-current="page">Companies</a>
+        </li>
+        <li>
+          <a class="nav-link" href="/myapp">Apps</a>
+        </li>
+      </ul>
+    </nav>
+    <main role="main" class="company-listing apps-listing">
+      <div
+        class="d-flex justify-content-between flex-wrap flex-md-nowrap app-title-group border-bottom">
+        <h1 class="h1-title hsbc-light">Company List</h1>
+      </div>
+      {% if data|length > 0 %}
+        <div class="table-responsive">
+          <table>
+            <thead>
+            <tr>
+              <td>Company Name</td>
+              <td></td>
+            </tr>
+            </thead>
+            {% for company_id, company_label in data %}
+              <tr>
+                <td data-id="{{ company_id }}">{{ company_label }}</td>
+                <td>
+                  <a href="/company/members/{{ company_id }}">
+                    <img alt="View" class="view-btn-icon"
+                         src="/themes/custom/hsbcmarketplace/images/view.svg"/>{{ "View Members"|t }}
+                  </a>
+                </td>
+              </tr>
+            {% endfor %}
+          </table>
+        </div>
+      {% else %}
+        <div>{{ "You have not added to any company(s)." }}</div>
+      {% endif %}
+    </main>
+  </div>
+</div>
+

@@ -1,0 +1,198 @@
+mulesoft_app.myappuserpage:
+  path: '/myapp'
+  defaults:
+    _controller: '\Drupal\mulesoft_app\Controller\MyappuserpageController::myapp'
+    _title: 'Apps'
+  requirements:
+    _user_approve_access_check: 'TRUE'
+  options:
+    no_cache: 'TRUE'
+
+mulesoft_app.myappaddapp:
+  path: '/myapp/addapp'
+  defaults:
+    _controller: '\Drupal\mulesoft_app\Controller\MyappuserpageController::myappaddapp'
+    _title: 'Add app'
+  requirements:
+    _role: 'authenticated'
+  options:
+    no_cache: 'TRUE'
+
+mulesoft_app.appclients:
+  path: '/myapp/appclient'
+  defaults:
+    _controller: '\Drupal\mulesoft_app\Controller\MyappuserpageController::appclient'
+    _title: 'My App - Add app'
+  requirements:
+    _user_approve_access_check: 'TRUE'
+  options:
+    no_cache: 'TRUE'
+
+mulesoft_app.mulesoft_app_apigatewaytype_form:
+  path: '/admin/config/mulesoft_app/apigatewaytype'
+  defaults:
+    _form: '\Drupal\mulesoft_app\Form\Apigatewaytype'
+    _title: 'Apigatewaytype'
+  requirements:
+    _permission: 'access administration pages'
+  options:
+    _admin_route: TRUE
+
+mulesoft_app.mulesoft_api_sync_form:
+  path: '/admin/config/mulesoft_app/mulesoftapisync'
+  defaults:
+    _form: '\Drupal\mulesoft_app\Form\MulesoftAPISyncForm'
+    _title: 'MulesoftAPISyncForm'
+  requirements:
+    _permission: 'access administration pages'
+  options:
+    _admin_route: TRUE
+
+mulesoft_app.mulesoft_app_create_form:
+  path: '/mulesoft_app/form/mulesoft_app_create'
+  defaults:
+    _form: '\Drupal\mulesoft_app\Form\MulesoftAppCreateForm'
+    _title: 'MulesoftAppCreateForm'
+  requirements:
+    _access: 'TRUE'
+
+mulesoft_app.delete_mulesoft_app_delete:
+  path: '/myapp/{app_id}/delete'
+  defaults:
+    _form: '\Drupal\mulesoft_app\Form\MulesoftAppDeleteForm'
+    _title: 'Delete App'
+  requirements:
+    _app_access_check: 'TRUE'
+
+mulesoft_app.delete_mulesoft_app_edit:
+  path: '/myapp/{app_id}/edit'
+  defaults:
+    _form: '\Drupal\mulesoft_app\Form\MulesoftAppEditForm'
+    _title: 'Edit App'
+  requirements:
+    _app_access_check: 'TRUE'
+
+mulesoft_app.delete_mulesoft_app_api_access_edit:
+  path: '/myapp/api/{app_id}/edit'
+  defaults:
+    _form: '\Drupal\mulesoft_app\Form\MulesoftAppAPIEditForm'
+    _title: 'Edit App APIs'
+  requirements:
+    _app_access_check: 'TRUE'
+
+mulesoft_app.o_b_directory_config_form:
+  path: '/admin/config/system/obdirectoryconfig'
+  defaults:
+    _form: '\Drupal\mulesoft_app\Form\OBDirectoryConfigForm'
+    _title: 'OBDirectoryConfigForm'
+  requirements:
+    _permission: 'administer Mulesoft api gateway'
+  options:
+    _admin_route: TRUE
+
+mulesoft_app.mulesoft_app_connection_config_form:
+  path: '/admin/config/mulesoft_app/connection-config'
+  defaults:
+    _form: '\Drupal\mulesoft_app\Form\ConnectionConfigForm'
+    _title: 'Mulesoft API gateway general settings'
+  requirements:
+    _permission: 'administer Mulesoft api gateway'
+  options:
+    _admin_route: TRUE
+
+mulesoft_app.mulesoft_app_authentication_form:
+  path: '/admin/config/mulesoft_app/settings'
+  defaults:
+    _form: '\Drupal\mulesoft_app\Form\AuthenticationForm'
+    _title: 'credentails'
+  requirements:
+    _permission: 'access administration pages'
+  options:
+    _admin_route: TRUE
+
+mulesoft_app.settings.error_page:
+  path: '/admin/config/mulesoft_app/error-page-settings'
+  defaults:
+    _form: '\Drupal\mulesoft_app\Form\ErrorPageSettingsForm'
+    _title: 'Error page settings'
+  requirements:
+    _permission: 'administer amazon api gateway'
+
+mulesoft_app.add_member:
+  path: '/admin/user/add_member'
+  defaults:
+    _form: '\Drupal\mulesoft_app\Form\AddMember'
+    _title: 'Invite new member'
+  requirements:
+    _permission: 'add group member'
+
+mulesoft_app.admin_config_mulesoft_app:
+  path: '/admin/config/mulesoft_app'
+  defaults:
+    _controller: '\Drupal\system\Controller\SystemController::systemAdminMenuBlockPage'
+    _title: 'Mulesoft API gateway'
+  requirements:
+    _permission: 'administer Mulesoft api gateway'
+
+mulesoft_app.app_details:
+  path: '/myapp/{app_id}/details'
+  defaults:
+    _controller: '\Drupal\mulesoft_app\Controller\DetailsMulesoftAppController::details_mulesoft_app'
+    _title: 'App Details'
+  requirements:
+    _app_access_check: 'TRUE'
+  options:
+    no_cache: 'TRUE'
+
+mulesoft_app.user_app_details:
+  path: '/view/app/{app_id}/details'
+  defaults:
+    _controller: '\Drupal\mulesoft_app\Controller\MyappuserpageController::details_mulesoft_app'
+    _title: 'App Details'
+  requirements:
+    _role: 'authenticated'
+  options:
+    no_cache: 'TRUE'
+
+mulesoft_app.app_secret_reset:
+  path: '/myapp/{app_id}/{mulesoft_id}/reset'
+  defaults:
+    _controller: '\Drupal\mulesoft_app\Controller\DetailsMulesoftAppController::resetAppClientSecret'
+    _title: 'App Details'
+  requirements:
+    _role: 'authenticated'
+
+mulesoft_app.company_listing:
+  path: '/company/list'
+  defaults:
+    _controller: '\Drupal\mulesoft_app\Controller\MyappuserpageController::companyList'
+    _title: 'Members'
+  requirements:
+    _role: 'authenticated'
+
+mulesoft_app.my_company_listing:
+  path: '/list-company'
+  defaults:
+    _controller: '\Drupal\mulesoft_app\Controller\MyappuserpageController::listUsercompanies'
+    _title: 'Companies'
+  requirements:
+    _role: 'authenticated'
+  options:
+    no_cache: 'TRUE'
+
+mulesoft_app.user_apps_operations:
+  path: '/group/{gid}/user/{uid}/{operation}'
+  defaults:
+    _controller: '\Drupal\mulesoft_app\Controller\MyappuserpageController::userAppOperations'
+  requirements:
+    _role: 'authenticated'
+  options:
+    no_cache: 'TRUE'
+
+mulesoft_app.closeProductModal:
+  path: '/close-modal-form'
+  defaults:
+    _controller: '\Drupal\mulesoft_app\Controller\MyappuserpageController::closeModalForm'
+    _title: 'Close modal'
+  requirements:
+    _permission: 'access content'
