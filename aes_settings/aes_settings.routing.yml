@@ -1,0 +1,7 @@
+aes_settings.settings:
+  path: '/admin/settings/aes'
+  defaults:
+    _title: 'Aes Settings'
+    _form: 'Drupal\aes_settings\Form\AesConfigSettingsForm'
+  requirements:
+    _permission: 'administer site configuration'

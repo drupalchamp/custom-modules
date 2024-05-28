@@ -1,0 +1,5 @@
+name: 'Amrita Settings'
+type: module
+description: 'Amrita settings custom module.'
+package: '@Amrita custom package'
+core_version_requirement: ^10

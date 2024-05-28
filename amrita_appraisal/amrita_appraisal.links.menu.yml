@@ -1,0 +1,5 @@
+amrita_appraisal.settings:
+  title: Amrita Appraisal
+  parent: system.admin_config
+  route_name: amrita_appraisal.settings
+  weight: -20

@@ -1,0 +1,7 @@
+amrita_index.settings:
+  path: '/admin/settings/amrita_index'
+  defaults:
+    _title: 'Amrita index'
+    _form: 'Drupal\amrita_index\Form\AmritaIndexCinfigSettingsForm'
+  requirements:
+    _permission: 'administer site configuration'

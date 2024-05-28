@@ -1,0 +1,7 @@
+amrita_settings.settings:
+  path: '/admin/settings/amrita'
+  defaults:
+    _title: 'Amrita Settings'
+    _form: 'Drupal\amrita_settings\Form\AmritaConfigSettingsForm'
+  requirements:
+    _permission: 'administer site configuration'

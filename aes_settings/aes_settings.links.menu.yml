@@ -1,0 +1,5 @@
+aes_settings.settings:
+  title: Aes Settings
+  parent: system.admin_config
+  route_name: aes_settings.settings
+  weight: -21

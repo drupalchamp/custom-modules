@@ -1,0 +1,7 @@
+amrita_appraisal.settings:
+  path: '/admin/settings/amrita_appraisal'
+  defaults:
+    _title: 'Amrita Appraisal'
+    _form: 'Drupal\amrita_appraisal\Form\AmritaAppraisalConfigSettingsForm'
+  requirements:
+    _permission: 'administer site configuration'

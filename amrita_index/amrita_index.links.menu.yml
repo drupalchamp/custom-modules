@@ -1,0 +1,5 @@
+amrita_index.settings:
+  title: Amrita Life Settlement Index
+  parent: system.admin_config
+  route_name: amrita_index.settings
+  weight: -19
