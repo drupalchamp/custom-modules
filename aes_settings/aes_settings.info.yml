@@ -1,0 +1,5 @@
+name: 'Aes Settings'
+type: module
+description: 'Aes settings custom module.'
+package: '@Amrita custom package'
+core_version_requirement: ^10

@@ -1,0 +1,5 @@
+amrita_settings.settings:
+  title: Amrita Settings
+  parent: system.admin_config
+  route_name: amrita_settings.settings
+  weight: -20
