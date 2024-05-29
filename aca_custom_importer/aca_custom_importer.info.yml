@@ -1,0 +1,5 @@
+name: ACT Content Importer
+description: ACT Content Import Functionality.
+package: Custom
+type: module
+core_version_requirement: ^9 || ^10
