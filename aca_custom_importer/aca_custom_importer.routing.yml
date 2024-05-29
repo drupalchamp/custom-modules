@@ -1,0 +1,7 @@
+act_content_import.act_content_import_form: 
+  path: 'act-content-import'
+  defaults:
+    _form: '\Drupal\aca_custom_importer\Form\ActContentImportForm'
+    _title: 'ACT Content Import'
+  requirements:
+     _role: 'staff_administrator'
